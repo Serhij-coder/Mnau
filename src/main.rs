@@ -7,6 +7,7 @@ use crate::{cat::Cat, fish::Fish, textures::Assets};
 mod cat;
 mod fish;
 mod textures;
+mod utils;
 
 #[macroquad::main("Mnau")]
 async fn main() {
