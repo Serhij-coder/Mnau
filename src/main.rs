@@ -2,8 +2,9 @@ use std::process::exit;
 
 use macroquad::{miniquad::window::set_window_size, prelude::*};
 
-use crate::{cat::Cat, fish::Fish, textures::Assets};
+use crate::{car::Car, cat::Cat, fish::Fish, textures::Assets, utils::GameOverAction};
 
+mod car;
 mod cat;
 mod fish;
 mod textures;
@@ -24,16 +25,28 @@ async fn main() {
     };
 
     let mut fishes: Vec<Fish> = Vec::new();
+    let mut fish_spawn_timer: f32 = 0.0;
 
-    for _ in 0..10 {
-        fishes.push(Fish::new());
-    }
+    let mut cars: Vec<Car> = Vec::new();
+    let mut car_spawn_timer: f32 = 0.0;
 
     let mut cat = Cat::new();
     let mut score: i64 = 0;
 
     loop {
         // 1. Logic (Update your variables here)
+        fish_spawn_timer += get_frame_time();
+        if fish_spawn_timer >= 3.0 {
+            fishes.push(Fish::new());
+            fish_spawn_timer = 0.0;
+        }
+
+        car_spawn_timer += get_frame_time();
+        if car_spawn_timer >= 5.0 {
+            cars.push(Car::new());
+            car_spawn_timer = 0.0;
+        }
+
         if is_key_pressed(KeyCode::Q) {
             exit(0);
         }
@@ -54,11 +67,53 @@ async fn main() {
             fishes.remove(*index);
         }
 
+        // Check for car collisions
+        let mut game_over = false;
+        for car in &cars {
+            if car.check_collision(cat.position) {
+                println!("Game Over! Car collision detected!");
+                game_over = true;
+                break;
+            }
+        }
+
+        if game_over {
+            // Show game over screen and wait for player action
+            loop {
+                let action = utils::game_over_screen(&assets.font, score).await;
+                match action {
+                    GameOverAction::Retry => {
+                        // Reset game state and restart
+                        fishes.clear();
+                        fish_spawn_timer = 0.0;
+                        cars.clear();
+                        car_spawn_timer = 0.0;
+                        cat = Cat::new();
+                        score = 0;
+                        break;
+                    }
+                    GameOverAction::Quit => {
+                        exit(0);
+                    }
+                    GameOverAction::None => {
+                        // Continue waiting for input
+                    }
+                }
+            }
+        }
+
+        // Remove off-screen cars
+        cars.retain(|car| !car.is_off_screen());
+
         // 2. Rendering (Clear first, then draw)
         clear_background(GRAY);
 
         for fish in &fishes {
             fish.update(&assets);
+        }
+
+        for car in &mut cars {
+            car.update(&assets);
         }
 
         cat.update(&assets);
