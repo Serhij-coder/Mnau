@@ -16,7 +16,7 @@ pub enum FishType {
 }
 
 impl FishType {
-    fn base_points(&self) -> i64 {
+    pub fn base_points(&self) -> i64 {
         match self {
             FishType::Green => 300,
             FishType::White => 100,
@@ -59,6 +59,24 @@ impl Fish {
 
     pub fn update(&self, assets: &Assets) {
         self.draw(assets);
+    }
+
+    /// Check if the cat collides with this fish (both are 100x100)
+    /// Returns true if collision detected
+    pub fn check_collision(&self, cat_pos: Vec2) -> bool {
+        const CAT_SIZE: f32 = 100.0;
+        const FISH_SIZE: f32 = 100.0;
+        
+        // Simple AABB collision detection
+        let cat_right = cat_pos.x + CAT_SIZE;
+        let cat_bottom = cat_pos.y + CAT_SIZE;
+        let fish_right = self.position.x + FISH_SIZE;
+        let fish_bottom = self.position.y + FISH_SIZE;
+        
+        cat_pos.x < fish_right
+            && cat_right > self.position.x
+            && cat_pos.y < fish_bottom
+            && cat_bottom > self.position.y
     }
 
     fn draw(&self, assets: &Assets) {

@@ -30,11 +30,28 @@ async fn main() {
     }
 
     let mut cat = Cat::new();
+    let mut score: i64 = 0;
 
     loop {
         // 1. Logic (Update your variables here)
         if is_key_pressed(KeyCode::Q) {
             exit(0);
+        }
+
+        // Check for fish collisions and collect them
+        let mut collected_indices = Vec::new();
+        
+        for (index, fish) in fishes.iter().enumerate() {
+            if fish.check_collision(cat.position) {
+                score += fish.variant.base_points();
+                collected_indices.push(index);
+                println!("Collected fish! Points: {}. Total score: {}", fish.variant.base_points(), score);
+            }
+        }
+
+        // Remove collected fish (iterate in reverse to avoid index issues)
+        for index in collected_indices.iter().rev() {
+            fishes.remove(*index);
         }
 
         // 2. Rendering (Clear first, then draw)
@@ -45,6 +62,19 @@ async fn main() {
         }
 
         cat.update(&assets);
+
+        // Draw score on screen using custom font
+        draw_text_ex(
+            &format!("Score: {}", score),
+            10.0,
+            60.0,
+            TextParams {
+                font: Some(&assets.font),
+                font_size: 50,
+                color: WHITE,
+                ..Default::default()
+            },
+        );
 
         // 3. Wait for the next frame (Crucial!)
         next_frame().await
