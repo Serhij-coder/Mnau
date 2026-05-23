@@ -48,8 +48,8 @@ impl Fish {
         };
 
         let position = Vec2::new(
-            rand::gen_range(0.0, screen_width()),
-            rand::gen_range(0.0, screen_height()),
+            rand::gen_range(100.0, screen_width() - 200.0),
+            rand::gen_range(100.0, screen_height() - 200.0),
         );
 
         println!("Fish created: {} {}", position, variant.to_string());

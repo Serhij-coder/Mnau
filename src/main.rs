@@ -42,6 +42,7 @@ async fn main() {
 
     let mut cat = Cat::new();
     let mut score: i64 = 0;
+    let mut debug_visible: bool = false;
 
     loop {
         // 1. Logic (Update your variables here)
@@ -67,6 +68,10 @@ async fn main() {
 
         if is_key_pressed(KeyCode::Q) {
             exit(0);
+        }
+
+        if is_key_pressed(KeyCode::F3) {
+            debug_visible = !debug_visible;
         }
 
         // Check for fish collisions and collect them
@@ -149,6 +154,45 @@ async fn main() {
                 ..Default::default()
             },
         );
+
+        if debug_visible {
+            let debug_x = screen_width() - 380.0;
+            let debug_y = 20.0;
+            let font_size = 24;
+            let line_h = 26.0;
+            let pad_y = 8.0;
+
+            draw_rectangle(
+                debug_x - 10.0,
+                debug_y - pad_y,
+                370.0,
+                line_h * 8.0 + pad_y * 2.0,
+                Color::new(0.0, 0.0, 0.0, 0.7),
+            );
+
+            let lines = [
+                format!("FPS: {}", get_fps()),
+                format!("Time: {:.1}s", elapsed),
+                format!("Fish: every {:.2}s ({} alive)", fish_interval, fishes.len()),
+                format!("Cars: every {:.2}s ({} alive)", car_interval, cars.len()),
+                format!("Car speed: {:.0}-{:.0}", car_speed_min, car_speed_max),
+                format!("Cat: ({:.0}, {:.0})", cat.position.x, cat.position.y),
+                format!("Score: {}", score),
+                format!("[F3] hide debug"),
+            ];
+            for (i, line) in lines.iter().enumerate() {
+                draw_text_ex(
+                    line,
+                    debug_x,
+                    debug_y + i as f32 * line_h + pad_y,
+                    TextParams {
+                        font_size,
+                        color: WHITE,
+                        ..Default::default()
+                    },
+                );
+            }
+        }
 
         // 3. Wait for the next frame (Crucial!)
         next_frame().await
