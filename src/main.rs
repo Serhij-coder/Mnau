@@ -30,20 +30,30 @@ async fn main() {
     let mut cars: Vec<Car> = Vec::new();
     let mut car_spawn_timer: f32 = 0.0;
 
+    let mut elapsed: f32 = 0.0;
+
     let mut cat = Cat::new();
     let mut score: i64 = 0;
 
     loop {
         // 1. Logic (Update your variables here)
-        fish_spawn_timer += get_frame_time();
-        if fish_spawn_timer >= 3.0 {
+        let dt = get_frame_time();
+        elapsed += dt;
+
+        let fish_interval = (1.5 + 3.5 * (-elapsed / 50.0).exp()).max(1.5);
+        let car_interval = (3.0 + 7.0 * (-elapsed / 55.0).exp()).max(3.0);
+        let car_speed_min = (600.0 - 300.0 * (-elapsed / 60.0).exp()).min(600.0);
+        let car_speed_max = (800.0 - 300.0 * (-elapsed / 60.0).exp()).min(800.0);
+
+        fish_spawn_timer += dt;
+        if fish_spawn_timer >= fish_interval {
             fishes.push(Fish::new());
             fish_spawn_timer = 0.0;
         }
 
-        car_spawn_timer += get_frame_time();
-        if car_spawn_timer >= 5.0 {
-            cars.push(Car::new());
+        car_spawn_timer += dt;
+        if car_spawn_timer >= car_interval {
+            cars.push(Car::new(car_speed_min, car_speed_max));
             car_spawn_timer = 0.0;
         }
 
@@ -90,6 +100,7 @@ async fn main() {
                         car_spawn_timer = 0.0;
                         cat = Cat::new();
                         score = 0;
+                        elapsed = 0.0;
                         break;
                     }
                     GameOverAction::Quit => {

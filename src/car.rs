@@ -22,7 +22,7 @@ pub struct Car {
 }
 
 impl Car {
-    pub fn new() -> Self {
+    pub fn new(min_velocity: f32, max_velocity: f32) -> Self {
         let side = match rand::gen_range(0, 4) {
             0 => CarSide::Left,
             1 => CarSide::Right,
@@ -62,7 +62,7 @@ impl Car {
             }
         };
 
-        let velocity = rand::gen_range(500.0, 800.0);
+        let velocity = rand::gen_range(min_velocity, max_velocity);
 
         Car {
             position,
