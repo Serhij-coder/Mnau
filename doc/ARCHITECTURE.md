@@ -52,6 +52,7 @@ src/
 - Collision detection and scoring
 - Dynamic difficulty scaling (exponential decay on spawn intervals and car speed)
 - Game over screen with retry/quit
+- Debug overlay toggled by F3 (FPS, timers, counts, positions)
 
 **Key Variables**:
 - `cat: Cat` - Player entity
@@ -111,9 +112,10 @@ src/
 - `check_collision(&self, cat_pos)` - AABB collision detection
 
 **Features**:
-- Random spawning at game start or on timer
+- Continuous spawning via timer (exponential decay interval)
 - Three distinct variants with different values
 - Static position (no movement)
+- Spawns with 100px margin from screen edges
 - AABB collision detection (100x100)
 
 #### car.rs

@@ -52,7 +52,7 @@ Core mechanic where players collect different fish types to earn points.
 ### Spawning Behavior
 - **Initial State**: 0 fish — fish spawn continuously via timer
 - **Interval**: Exponential decay from 5.0s → 1.5s floor (time-based difficulty scaling)
-- **Distribution**: Random across full screen (`rand::gen_range(0, screen_width())`, `rand::gen_range(0, screen_height())`)
+- **Distribution**: Random within screen bounds, 100px margin from edges (`rand::gen_range(100.0, screen_width()-200.0)`)
 - **Variants**: Random selection (1/3 each type)
 
 ### Collection Mechanics
@@ -407,6 +407,18 @@ The rate of change is fastest at the start and gradually tapers — there is no 
 | **S** | Move down | Feature 1+ |
 | **D** | Move right | Feature 1+ |
 | **Q** | Quit | Feature 1+ |
+| **F3** | Toggle debug overlay | Debug |
+
+## Debug Screen
+
+Toggle with **F3**. Shows real-time game state in the top-right corner:
+- FPS
+- Elapsed time since game start/retry
+- Fish spawn interval + count alive
+- Car spawn interval + count alive
+- Car speed range
+- Cat screen position
+- Current score
 
 *Note: No other inputs currently active*
 
