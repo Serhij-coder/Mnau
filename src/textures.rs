@@ -11,30 +11,19 @@ pub struct Assets {
     pub font: Font,
 }
 
+fn load_embedded_texture(bytes: &[u8]) -> Texture2D {
+    Texture2D::from_file_with_format(bytes, None)
+}
+
 impl Assets {
-    pub async fn load(font: Font) -> Result<Self, String> {
-        // We load them all concurrently
-        let car_white = load_texture("res/car_white.png")
-            .await
-            .map_err(|_| "Failed to load car_white")?;
-        let car_yellow = load_texture("res/car_yellow.png")
-            .await
-            .map_err(|_| "Failed to load car_yellow")?;
-        let cat = load_texture("res/cat.png")
-            .await
-            .map_err(|_| "Failed to load cat")?;
-        let cat2 = load_texture("res/cat2.png")
-            .await
-            .map_err(|_| "Failed to load cat2")?;
-        let fish_green = load_texture("res/fish_green.png")
-            .await
-            .map_err(|_| "Failed to load fish_green")?;
-        let fish_skeleton = load_texture("res/fish_skeleton.png")
-            .await
-            .map_err(|_| "Failed to load fish_skeleton")?;
-        let fish_white = load_texture("res/fish_white.png")
-            .await
-            .map_err(|_| "Failed to load fish_white")?;
+    pub fn load(font: Font) -> Result<Self, String> {
+        let car_white = load_embedded_texture(include_bytes!("../res/car_white.png"));
+        let car_yellow = load_embedded_texture(include_bytes!("../res/car_yellow.png"));
+        let cat = load_embedded_texture(include_bytes!("../res/cat.png"));
+        let cat2 = load_embedded_texture(include_bytes!("../res/cat2.png"));
+        let fish_green = load_embedded_texture(include_bytes!("../res/fish_green.png"));
+        let fish_skeleton = load_embedded_texture(include_bytes!("../res/fish_skeleton.png"));
+        let fish_white = load_embedded_texture(include_bytes!("../res/fish_white.png"));
 
         Ok(Self {
             car_white,

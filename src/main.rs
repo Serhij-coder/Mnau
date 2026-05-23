@@ -27,10 +27,7 @@ async fn main() {
 
     utils::load_screen(&font).await;
 
-    let assets = match Assets::load(font).await {
-        Ok(assets) => assets,
-        Err(e) => panic!("{}", e),
-    };
+    let assets = Assets::load(font).expect("Failed to load assets");
 
     let mut fishes: Vec<Fish> = Vec::new();
     let mut fish_spawn_timer: f32 = 0.0;
