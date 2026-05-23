@@ -1,6 +1,7 @@
 use std::process::exit;
 
 use macroquad::{miniquad::window::set_window_size, prelude::*};
+use macroquad::rand::srand;
 
 use crate::{car::Car, cat::Cat, fish::Fish, textures::Assets, utils::GameOverAction};
 
@@ -13,6 +14,13 @@ mod utils;
 #[macroquad::main("Mnau")]
 async fn main() {
     set_fullscreen(true);
+
+    srand(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64,
+    );
 
     let font =
         load_ttf_font_from_bytes(include_bytes!("../res/font.otf")).expect("Failed to load font");
