@@ -4,7 +4,7 @@ A 2D arcade game built with Rust and Macroquad. Control a cat, collect fish for 
 
 ## Play
 
-Download the latest release from [GitHub Releases](https://github.com/anomalyco/Mnau/releases):
+Download the latest release from [GitHub Releases](https://github.com/Serhij-coder/Mnau/releases):
 
 | Platform | File | Run |
 |----------|------|-----|
@@ -28,3 +28,4 @@ For packaging cross-platform builds:
 ## Documentation
 
 See [`doc/`](doc/) for setup, architecture, features, and controls.
+
