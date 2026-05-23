@@ -55,9 +55,8 @@ When adding new features:
 **Current Version**: 0.1.0
 
 **Active Branches**:
-- `main` - Stable with fish collection
-- `feature/fish-respawn` - In development
-- `feature/cars` - In development
+- `main` - Stable with fish collection, car obstacles, difficulty scaling, game over screen
+- `feature/cars` - Merged to main
 
 ---
 

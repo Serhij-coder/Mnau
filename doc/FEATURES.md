@@ -49,10 +49,10 @@ Core mechanic where players collect different fish types to earn points.
 | White Fish | ⚪ White sprite | +100 | Common |
 | Skeleton Fish | 💀 Skeleton sprite | -200 | Penalty |
 
-### Spawning Behavior (Configured)
-- **Initial State**: 10 fish spawn randomly on game start
-- **Respawn**: None (static placement)
-- **Distribution**: Random across full screen
+### Spawning Behavior
+- **Initial State**: 0 fish — fish spawn continuously via timer
+- **Interval**: Exponential decay from 5.0s → 1.5s floor (time-based difficulty scaling)
+- **Distribution**: Random across full screen (`rand::gen_range(0, screen_width())`, `rand::gen_range(0, screen_height())`)
 - **Variants**: Random selection (1/3 each type)
 
 ### Collection Mechanics
@@ -120,77 +120,70 @@ draw_text_ex(
 - **Location**: main branch
 - **Features**: Initial fish spawning + collection + scoring
 
-## Feature 2: Fish Respawn 🚀 IN DEVELOPMENT
+## Feature 2: Fish Respawn ✅ IMPLEMENTED
 
 ### Overview
-Automatic fish spawning mechanism with timed intervals instead of static initial placement.
+Automatic fish spawning with time-based difficulty scaling — intervals decrease the longer you play.
 
 ### Spawning Mechanics
 
-**Respawn Timer**
-- **Interval**: 5 seconds
-- **Implementation**: Frame-time accumulation
+**Spawn Timer** (exponential decay)
+- **Start**: 5.0 seconds between fish
+- **Formula**: `fish_interval = 1.5 + 3.5 × e^(-elapsed / 50.0)`
+- **Floor**: 1.5 seconds (approached asymptotically)
 - **Spawn Count**: 1 fish per interval
 - **Variants**: Random (1/3 probability each)
 
 **Initial State**
 - Game starts with **0 fish**
-- First fish spawns after 5 seconds
-- Continuous spawning throughout game
+- First fish spawns after ~5 seconds
+- Continuous spawning, accelerating over time
 
 ### Implementation Details (src/main.rs)
 
 ```rust
-let mut fish_spawn_timer: f32 = 0.0;
+let fish_interval = (1.5 + 3.5 * (-elapsed / 50.0).exp()).max(1.5);
 
-loop {
-    // Accumulate time
-    fish_spawn_timer += get_frame_time();
-    
-    // Check if spawn interval reached
-    if fish_spawn_timer >= 5.0 {
-        fishes.push(Fish::new());
-        fish_spawn_timer = 0.0;
-    }
+fish_spawn_timer += get_frame_time();
+if fish_spawn_timer >= fish_interval {
+    fishes.push(Fish::new());
+    fish_spawn_timer = 0.0;
 }
 ```
 
-### Behavior
-- No respawn of collected fish (they stay gone)
-- Continuous new spawning every 5 seconds
-- Random position each spawn
-- Random type each spawn
-- Creates ongoing gameplay challenge
+### Difficulty Curve
+
+| Elapsed | Fish interval |
+|---------|--------------|
+| 0s | 5.0s |
+| 30s | 3.8s |
+| 60s | 2.6s |
+| 90s | 2.0s |
+| 120s+ | ~1.5s (floor) |
 
 ### Branch: feature/fish-respawn
-- **Status**: 🚀 In development
-- **Location**: feature/fish-respawn branch
-- **Changes**: Removes initial spawn loop, adds 5-second timer
+- **Status**: ✅ Merged to main
+- **Location**: main branch
 
-### Testing Checklist
-- [ ] Game starts with 0 fish
-- [ ] First fish appears at ~5 seconds
-- [ ] Second fish appears at ~10 seconds
-- [ ] Fish can still be collected
-- [ ] Scoring works correctly
-- [ ] Score display persists
-
-## Feature 3: Cars 🚀 IN DEVELOPMENT
+## Feature 3: Cars ✅ IMPLEMENTED
 
 ### Overview
 Dynamic obstacle system where cars spawn randomly and move across the screen, creating hazards for the player.
 
 ### Car Mechanics
 
-**Spawn Behavior**
-- **Interval**: 10 seconds
-- **Spawn Location**: Random screen edge (off-screen)
+**Spawn Behavior** (exponential decay)
+- **Start**: 10.0 seconds between cars
+- **Formula**: `car_interval = 3.0 + 7.0 × e^(-elapsed / 55.0)`
+- **Floor**: 3.0 seconds (approached asymptotically)
+- **Spawn Location**: Random screen edge (100px off-screen)
   - Left edge: x = -100
   - Right edge: x = screen_width() + 100
   - Top edge: y = -100
   - Bottom edge: y = screen_height() + 100
 - **Direction**: Toward opposite edge
-- **Speed**: 300-500 pixels/second (randomized)
+- **Speed**: Exponential decay from 300–500 → 600–800 over time
+  - Formula: `car_speed = rand(600 - 300×e^(-elapsed/60), 800 - 300×e^(-elapsed/60))`
 
 **Movement**
 - Linear path across screen
@@ -213,22 +206,32 @@ Dynamic obstacle system where cars spawn randomly and move across the screen, cr
 **Car-Cat Collision**
 - Uses AABB collision detection
 - Both entities are 100×100
-- Collision triggers immediate game exit
+- Collision triggers game over screen
+
+**Game Over Screen**
+- Displays "GAME OVER" text and final score
+- "RETRY" button: resets all state (cars, fish, score, elapsed, cat position)
+- "QUIT" button: exits the game
+- Uses mouse input for button interaction
 
 **Implementation** (src/main.rs)
 ```rust
-for car in &cars {
-    if car.check_collision(cat.position) {
-        exit(0);  // Exit immediately
+if game_over {
+    loop {
+        let action = utils::game_over_screen(&assets.font, score).await;
+        match action {
+            GameOverAction::Retry => {
+                fishes.clear(); fish_spawn_timer = 0.0;
+                cars.clear(); car_spawn_timer = 0.0;
+                cat = Cat::new(); score = 0; elapsed = 0.0;
+                break;
+            }
+            GameOverAction::Quit => { exit(0); }
+            GameOverAction::None => { }
+        }
     }
 }
 ```
-
-**Behavior**
-- No game over screen
-- No fade transition
-- Instant window close
-- Simple, direct end game
 
 ### Car Module Structure (src/car.rs)
 
@@ -253,7 +256,7 @@ pub enum CarSide {
 ```
 
 **Methods**
-- `new()` - Spawn from random edge with random velocity/direction
+- `new(min_velocity, max_velocity)` - Spawn from random edge with velocity range
 - `update()` - Update position and render
 - `is_off_screen()` - Check if outside screen bounds
 - `check_collision()` - AABB collision with cat
@@ -261,51 +264,23 @@ pub enum CarSide {
 ### Spawning Logic
 
 ```rust
-let mut car_spawn_timer: f32 = 0.0;
+let car_interval = (3.0 + 7.0 * (-elapsed / 55.0).exp()).max(3.0);
+let car_speed_min = (600.0 - 300.0 * (-elapsed / 60.0).exp()).min(600.0);
+let car_speed_max = (800.0 - 300.0 * (-elapsed / 60.0).exp()).min(800.0);
 
-loop {
-    car_spawn_timer += get_frame_time();
-    
-    if car_spawn_timer >= 10.0 {
-        cars.push(Car::new());
-        car_spawn_timer = 0.0;
-    }
-    
-    // Remove off-screen cars
-    cars.retain(|car| !car.is_off_screen());
-}
-```
-
-### Game Loop Integration
-
-```rust
-// Car updates and rendering
-for car in &cars {
-    car.update(&assets);
+car_spawn_timer += get_frame_time();
+if car_spawn_timer >= car_interval {
+    cars.push(Car::new(car_speed_min, car_speed_max));
+    car_spawn_timer = 0.0;
 }
 
-// Car collision checking
-for car in &cars {
-    if car.check_collision(cat.position) {
-        exit(0);
-    }
-}
+// Remove off-screen cars
+cars.retain(|car| !car.is_off_screen());
 ```
 
 ### Branch: feature/cars
-- **Status**: 🚀 In development
-- **Location**: feature/cars branch
-- **New File**: src/car.rs
-- **Changes**: Car spawning, movement, collision
-
-### Testing Checklist
-- [ ] First car spawns after ~10 seconds
-- [ ] Car moves across screen
-- [ ] Car exits after leaving screen
-- [ ] New car spawns every 10 seconds
-- [ ] Cat collision exits game immediately
-- [ ] Score/fish collection works while cars active
-- [ ] White and yellow cars appear
+- **Status**: ✅ Merged to main
+- **Location**: main branch
 
 ## Feature Roadmap
 
@@ -315,13 +290,13 @@ for car in &cars {
 - [x] Screen boundary collision
 - [x] Display score with custom font
 
-### Tier 2: Gameplay Loop 🚀
-- [ ] Fish respawn timer (feature/fish-respawn)
-- [ ] Car obstacles (feature/cars)
-- [ ] Multiple game sessions
+### Tier 2: Gameplay Loop ✅
+- [x] Fish respawn timer (feature/fish-respawn)
+- [x] Car obstacles (feature/cars)
+- [x] Multiple game sessions (retry functionality)
 
-### Tier 3: Polish 💡
-- [ ] Game over screen
+### Tier 3: Polish 🚀
+- [x] Game over screen
 - [ ] Main menu
 - [ ] High score tracking
 - [ ] Sound effects
@@ -399,29 +374,29 @@ pub struct Assets {
 
 ### Difficulty Progression
 
-**Current** (feature/fish-collection)
-- Static 10 fish
-- No pressure (can collect at own pace)
-- Good for learning controls
+Difficulty scales **exponentially** with game time. All spawn intervals and car speeds use `elapsed` (time since last retry):
 
-**With Respawn** (feature/fish-respawn)
-- Continuous fish spawn
-- Can accumulate large scores
-- Moderate challenge
+| Elapsed | Fish interval | Car interval | Car speed |
+|---------|--------------|-------------|-----------|
+| 0s | 5.0s | 10.0s | 300–500 |
+| 30s | 3.8s | 7.9s | 390–590 |
+| 60s | 2.6s | 5.8s | 480–680 |
+| 90s | 2.0s | 4.3s | 545–745 |
+| 120s+ | ~1.5s (floor) | ~3.0s (floor) | ~600–800 (cap) |
 
-**With Cars** (feature/cars)
-- Car danger every 10 seconds
-- Time pressure
-- Requires skill and awareness
-- Game can end suddenly
+The rate of change is fastest at the start and gradually tapers — there is no sudden difficulty spike. Resetting via retry sets `elapsed` back to 0.
 
 ### Tuning Parameters
 
-Consider adjusting:
-- Fish spawn interval (currently 5s)
-- Car spawn interval (currently 10s)
-- Car speed (currently 300-500)
-- Point values (Green: 300, White: 100, Skeleton: -200)
+| Parameter | Starting value | Formula | Floor/Cap |
+|-----------|---------------|---------|-----------|
+| Fish spawn interval | 5.0s | `1.5 + 3.5 × e^(-elapsed/50)` | 1.5s |
+| Car spawn interval | 10.0s | `3.0 + 7.0 × e^(-elapsed/55)` | 3.0s |
+| Car speed min | 300 | `600 - 300 × e^(-elapsed/60)` | 600 |
+| Car speed max | 500 | `800 - 300 × e^(-elapsed/60)` | 800 |
+| Green fish points | +300 | — | — |
+| White fish points | +100 | — | — |
+| Skeleton fish points | -200 | — | — |
 
 ## Controls Summary
 

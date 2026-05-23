@@ -44,23 +44,20 @@
 
 ### Implemented ✅
 - Player cat with WASD controls and boundary collision
-- Fish entities with random spawning
+- Fish entities with continuous timed spawning (exponential decay difficulty)
 - Fish collection with point scoring
+- Car obstacles spawning from all four screen edges
+- Car speed and spawn rate increasing over time (exponential decay)
 - Score display with custom font
 - Basic collision detection (AABB)
+- Game over screen with retry/quit
 - Keyboard controls and quit functionality
-
-### In Development 🚀
-- Fish respawn timer system (`feature/fish-respawn`)
-- Car obstacles (`feature/cars`)
+- RNG seeded with system time for unique sessions
 
 ### Future Enhancements 💡
-- Multiple game states (menu, game over, pause)
+- Main menu
 - Sound effects and music
-- Enemy AI behaviors
-- Power-ups and special items
-- Different game modes
-- Persistent high score tracking
+- Particle effects on collection
 
 ## Technical Highlights
 
