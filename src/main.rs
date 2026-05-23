@@ -44,6 +44,16 @@ async fn main() {
     let mut score: i64 = 0;
     let mut debug_visible: bool = false;
 
+    let star_count = 150;
+    let mut stars: Vec<(f32, f32, f32)> = (0..star_count)
+        .map(|_| {
+            let x = rand::gen_range(0.0, screen_width());
+            let y = rand::gen_range(0.0, screen_height());
+            let brightness = rand::gen_range(0.3, 1.0);
+            (x, y, brightness)
+        })
+        .collect();
+
     loop {
         // 1. Logic (Update your variables here)
         let dt = get_frame_time();
@@ -114,6 +124,14 @@ async fn main() {
                         cat = Cat::new();
                         score = 0;
                         elapsed = 0.0;
+                        stars = (0..star_count)
+                            .map(|_| {
+                                let x = rand::gen_range(0.0, screen_width());
+                                let y = rand::gen_range(0.0, screen_height());
+                                let brightness = rand::gen_range(0.3, 1.0);
+                                (x, y, brightness)
+                            })
+                            .collect();
                         break;
                     }
                     GameOverAction::Quit => {
@@ -130,7 +148,16 @@ async fn main() {
         cars.retain(|car| !car.is_off_screen());
 
         // 2. Rendering (Clear first, then draw)
-        clear_background(GRAY);
+        clear_background(Color::new(0.03, 0.03, 0.06, 1.0));
+
+        for &(x, y, brightness) in &stars {
+            draw_circle(
+                x,
+                y,
+                1.5,
+                Color::new(brightness, brightness, brightness, 1.0),
+            );
+        }
 
         for fish in &fishes {
             fish.update(&assets);
