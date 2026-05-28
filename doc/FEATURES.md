@@ -32,6 +32,7 @@
 - Spawns from 4 random edges (Left/Right/Top/Bottom), 100px off-screen
 - Moves straight across the screen at frame-rate-independent velocity
 - Two variants: white and yellow (50/50 chance)
+- **Visual rotation**: cars face their movement direction (right=mirrored, left=default, down=rotated 90°, up=rotated -90°)
 - **Double car**: after 30s elapsed, 2 cars spawn per interval instead of 1
 - **Triple car**: after 60s elapsed, 3 cars spawn per interval
 
