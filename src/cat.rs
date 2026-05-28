@@ -14,6 +14,7 @@ pub enum CatType {
     MouthClose,
 }
 
+#[allow(dead_code)]
 pub enum CatEdge {
     TopLeft(Vec2),
     TopRight(Vec2),

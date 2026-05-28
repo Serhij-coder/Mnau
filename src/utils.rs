@@ -10,7 +10,6 @@ use macroquad::{
 pub enum GameOverAction {
     Retry,
     Quit,
-    None,
 }
 
 /// Display loading screen

@@ -161,12 +161,9 @@ async fn main() {
                             .collect();
                         break;
                     }
-                    GameOverAction::Quit => {
-                        exit(0);
-                    }
-                    GameOverAction::None => {
-                        // Continue waiting for input
-                    }
+                GameOverAction::Quit => {
+                    exit(0);
+                }
                 }
             }
         }
