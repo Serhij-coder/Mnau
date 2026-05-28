@@ -20,7 +20,7 @@ src/
 - Initializes Macroquad fullscreen, seeds RNG, loads font/assets
 - Tracks `elapsed` time for exponential difficulty scaling
 - Handles fish/car spawning, collision detection, scoring
-- Renders game world: starry background → entities → score → debug overlay
+- Renders game world: starry background → entities → score → timer → debug overlay
 - Game over loop with retry/quit; retry resets all state including elapsed
 
 ### cat.rs — Player

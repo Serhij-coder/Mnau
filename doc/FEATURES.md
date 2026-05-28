@@ -52,6 +52,13 @@
 | 90s | 1.7s | 3.4s | 567–767 | 2 |
 | 120s+ | ~1.5s | ~3.0s | ~600–800 | 2 |
 
+## Timer
+
+- Integer seconds display (e.g. `123s`), right-aligned in top-right corner
+- Driven by `elapsed` — same counter used for difficulty scaling
+- Resets to 0 on retry along with all game state
+- Same style as score: 50pt custom font, white color
+
 ## Scoring
 
 - `i64` score, persists until game over or retry
