@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use macroquad::{miniquad::window::set_window_size, prelude::*};
+use macroquad::prelude::*;
 use macroquad::rand::srand;
 
 use crate::{car::Car, cat::Cat, fish::Fish, textures::Assets, utils::GameOverAction};

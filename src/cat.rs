@@ -1,7 +1,7 @@
 use macroquad::{
     color::WHITE,
     input::{KeyCode, is_key_down},
-    math::{Vec2, Vec4},
+    math::Vec2,
     texture::draw_texture,
     time::get_frame_time,
     window::{screen_height, screen_width},

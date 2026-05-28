@@ -2,8 +2,7 @@ use macroquad::{
     color::WHITE,
     math::Vec2,
     prelude::rand,
-    rand::rand,
-    texture::{Texture2D, draw_texture},
+    texture::draw_texture,
     window::{screen_height, screen_width},
 };
 
