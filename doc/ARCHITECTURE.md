@@ -40,6 +40,7 @@ src/
 - `CarSide`: Left, Right, Top, Bottom — spawns from random edges 100px off-screen
 - `new(min_velocity, max_velocity)` — dynamic speed range
 - Moves in a straight line, cleaned up when off-screen (threshold: ±150px)
+- **Rotation**: texture rotated/flipped to face movement direction (left=default, right=flip_x, down=rotate -π/2, up=rotate π/2)
 - AABB collision with cat triggers game over
 
 ### textures.rs — Asset Loading

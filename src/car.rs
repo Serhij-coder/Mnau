@@ -2,7 +2,7 @@ use macroquad::{
     color::WHITE,
     math::Vec2,
     prelude::rand,
-    texture::{draw_texture, Texture2D},
+    texture::{draw_texture_ex, DrawTextureParams},
     window::{screen_height, screen_width},
 };
 
@@ -19,6 +19,8 @@ pub struct Car {
     pub velocity: f32,
     pub direction: Vec2,
     pub is_white: bool,
+    pub rotation: f32,
+    pub flip_x: bool,
 }
 
 impl Car {
@@ -64,11 +66,20 @@ impl Car {
 
         let velocity = rand::gen_range(min_velocity, max_velocity);
 
+        let (rotation, flip_x) = match side {
+            CarSide::Left => (0.0, true),
+            CarSide::Right => (0.0, false),
+            CarSide::Top => (-std::f32::consts::FRAC_PI_2, false),
+            CarSide::Bottom => (std::f32::consts::FRAC_PI_2, false),
+        };
+
         Car {
             position,
             velocity,
             direction,
             is_white,
+            rotation,
+            flip_x,
         }
     }
 
@@ -80,7 +91,17 @@ impl Car {
         } else {
             &assets.car_yellow
         };
-        draw_texture(texture, self.position.x, self.position.y, WHITE);
+        draw_texture_ex(
+            texture,
+            self.position.x,
+            self.position.y,
+            WHITE,
+            DrawTextureParams {
+                rotation: self.rotation,
+                flip_x: self.flip_x,
+                ..Default::default()
+            },
+        );
     }
 
     pub fn is_off_screen(&self) -> bool {
