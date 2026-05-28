@@ -1,6 +1,6 @@
 use macroquad::{
-    color::{BLACK, WHITE, RED, GREEN},
-    input::{is_mouse_button_pressed, mouse_position, MouseButton},
+    color::{BLACK, GREEN, RED, WHITE},
+    input::{MouseButton, is_mouse_button_pressed, mouse_position},
     shapes::draw_rectangle,
     text::{Font, TextParams, draw_text_ex, measure_text},
     window::{clear_background, next_frame, screen_height, screen_width},
@@ -13,6 +13,7 @@ pub enum GameOverAction {
     None,
 }
 
+/// Display loading screen
 pub async fn load_screen(font: &Font) {
     let mut loadbar_width = 0;
 
@@ -147,7 +148,13 @@ pub async fn game_over_screen(font: &Font, score: i64) -> GameOverAction {
 
         // Draw quit button
         let quit_color = if quit_hovered { RED } else { WHITE };
-        draw_rectangle(quit_button_x, buttons_y, BUTTON_WIDTH, BUTTON_HEIGHT, quit_color);
+        draw_rectangle(
+            quit_button_x,
+            buttons_y,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT,
+            quit_color,
+        );
 
         let quit_text = "QUIT";
         let quit_text_dimensions = measure_text(quit_text, Some(&font), 40, 1.0);
@@ -175,4 +182,3 @@ pub async fn game_over_screen(font: &Font, score: i64) -> GameOverAction {
         next_frame().await;
     }
 }
-

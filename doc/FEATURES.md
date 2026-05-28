@@ -18,7 +18,7 @@
 
 ### Spawning
 - **Starts with 0 fish**, continuous timer-based spawning
-- **Interval**: exponential decay `1.5 + 3.5 × e^(-elapsed / 50)`, starts at 5.0s, floor at 1.5s
+- **Interval**: exponential decay `1.5 + 1.0 × e^(-elapsed / 50)`, starts at 2.5s, floor at 1.5s
 - **Distribution**: random, 100px margin from screen edges
 - **Variants**: 1/3 chance each type
 
@@ -32,10 +32,11 @@
 - Spawns from 4 random edges (Left/Right/Top/Bottom), 100px off-screen
 - Moves straight across the screen at frame-rate-independent velocity
 - Two variants: white and yellow (50/50 chance)
+- **Double car**: after 30s elapsed, 2 cars spawn per interval instead of 1
 
 ### Difficulty Scaling
-- **Spawn interval**: exponential decay `3.0 + 7.0 × e^(-elapsed / 55)`, starts at 10.0s, floor at 3.0s
-- **Speed range**: starts at 300–500 px/s, caps at 600–800 px/s over time
+- **Spawn interval**: exponential decay `3.0 + 2.0 × e^(-elapsed / 55)`, starts at 5.0s, floor at 3.0s
+- **Speed range**: starts at 450–650 px/s, caps at 600–800 px/s over time
 
 ### Collision
 - AABB collision with cat (both 100×100) triggers game over screen
@@ -43,13 +44,13 @@
 
 ## Difficulty Curve
 
-| Elapsed | Fish interval | Car interval | Car speed |
-|---------|--------------|-------------|-----------|
-| 0s | 5.0s | 10.0s | 300–500 |
-| 30s | 3.8s | 7.9s | 390–590 |
-| 60s | 2.6s | 5.8s | 480–680 |
-| 90s | 2.0s | 4.3s | 545–745 |
-| 120s+ | ~1.5s | ~3.0s | ~600–800 |
+| Elapsed | Fish interval | Car interval | Car speed | Cars/spawn |
+|---------|--------------|-------------|-----------|------------|
+| 0s | 2.5s | 5.0s | 450–650 | 1 |
+| 30s | 2.1s | 4.2s | 509–709 | 2 |
+| 60s | 1.8s | 3.7s | 545–745 | 2 |
+| 90s | 1.7s | 3.4s | 567–767 | 2 |
+| 120s+ | ~1.5s | ~3.0s | ~600–800 | 2 |
 
 ## Scoring
 

@@ -62,10 +62,11 @@ src/
 Exponential decay driven by `elapsed` (seconds since game start/retry):
 
 ```
-fish_interval = max(1.5, 1.5 + 3.5 × e^(-elapsed / 50))     # 5.0s → 1.5s floor
-car_interval  = max(3.0, 3.0 + 7.0 × e^(-elapsed / 55))     # 10.0s → 3.0s floor
-car_speed_min = min(600, 600 - 300 × e^(-elapsed / 60))      # 300 → 600 cap
-car_speed_max = min(800, 800 - 300 × e^(-elapsed / 60))      # 500 → 800 cap
+fish_interval = max(1.5, 1.5 + 1.0 × e^(-elapsed / 50))     # 2.5s → 1.5s floor
+car_interval  = max(3.0, 3.0 + 2.0 × e^(-elapsed / 55))     # 5.0s → 3.0s floor
+car_speed_min = min(600, 600 - 150 × e^(-elapsed / 60))      # 450 → 600 cap
+car_speed_max = min(800, 800 - 150 × e^(-elapsed / 60))      # 650 → 800 cap
+car_double_threshold = 30.0                                   # 2 cars/spawn after 30s
 ```
 
 ## Collision Detection

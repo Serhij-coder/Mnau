@@ -51,15 +51,38 @@ async fn main() {
         })
         .collect();
 
+    let fish_interval_floor = 1.5;
+    let fish_interval_amplitude = 1.0;
+    let fish_interval_tau = 50.0;
+
+    let car_interval_floor = 3.0;
+    let car_interval_amplitude = 2.0;
+    let car_interval_tau = 55.0;
+
+    let car_speed_cap_min = 600.0;
+    let car_speed_cap_max = 800.0;
+    let car_speed_amplitude = 150.0;
+    let car_speed_tau = 60.0;
+
+    let car_double_threshold = 30.0;
+
     loop {
         // 1. Logic (Update your variables here)
         let dt = get_frame_time();
         elapsed += dt;
 
-        let fish_interval = (1.5 + 3.5 * (-elapsed / 50.0).exp()).max(1.5);
-        let car_interval = (3.0 + 7.0 * (-elapsed / 55.0).exp()).max(3.0);
-        let car_speed_min = (600.0 - 300.0 * (-elapsed / 60.0).exp()).min(600.0);
-        let car_speed_max = (800.0 - 300.0 * (-elapsed / 60.0).exp()).min(800.0);
+        let fish_interval = (fish_interval_floor
+            + fish_interval_amplitude * (-elapsed / fish_interval_tau).exp())
+        .max(fish_interval_floor);
+        let car_interval = (car_interval_floor
+            + car_interval_amplitude * (-elapsed / car_interval_tau).exp())
+        .max(car_interval_floor);
+        let car_speed_min = (car_speed_cap_min
+            - car_speed_amplitude * (-elapsed / car_speed_tau).exp())
+        .min(car_speed_cap_min);
+        let car_speed_max = (car_speed_cap_max
+            - car_speed_amplitude * (-elapsed / car_speed_tau).exp())
+        .min(car_speed_cap_max);
 
         fish_spawn_timer += dt;
         if fish_spawn_timer >= fish_interval {
@@ -70,6 +93,9 @@ async fn main() {
         car_spawn_timer += dt;
         if car_spawn_timer >= car_interval {
             cars.push(Car::new(car_speed_min, car_speed_max));
+            if elapsed >= car_double_threshold {
+                cars.push(Car::new(car_speed_min, car_speed_max));
+            }
             car_spawn_timer = 0.0;
         }
 
@@ -190,7 +216,7 @@ async fn main() {
                 debug_x - 10.0,
                 debug_y - pad_y,
                 370.0,
-                line_h * 8.0 + pad_y * 2.0,
+                line_h * 9.0 + pad_y * 2.0,
                 Color::new(0.0, 0.0, 0.0, 0.7),
             );
 
@@ -202,6 +228,7 @@ async fn main() {
                 format!("Car speed: {:.0}-{:.0}", car_speed_min, car_speed_max),
                 format!("Cat: ({:.0}, {:.0})", cat.position.x, cat.position.y),
                 format!("Score: {}", score),
+                format!("Double car: {}", if elapsed >= car_double_threshold { "ON" } else { "OFF" }),
                 format!("[F3] hide debug"),
             ];
             for (i, line) in lines.iter().enumerate() {
