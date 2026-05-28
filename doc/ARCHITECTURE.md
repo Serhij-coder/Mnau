@@ -67,6 +67,7 @@ car_interval  = max(3.0, 3.0 + 2.0 × e^(-elapsed / 55))     # 5.0s → 3.0s flo
 car_speed_min = min(600, 600 - 150 × e^(-elapsed / 60))      # 450 → 600 cap
 car_speed_max = min(800, 800 - 150 × e^(-elapsed / 60))      # 650 → 800 cap
 car_double_threshold = 30.0                                   # 2 cars/spawn after 30s
+car_triple_threshold = 60.0                                   # 3 cars/spawn after 60s
 ```
 
 ## Collision Detection

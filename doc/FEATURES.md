@@ -33,6 +33,7 @@
 - Moves straight across the screen at frame-rate-independent velocity
 - Two variants: white and yellow (50/50 chance)
 - **Double car**: after 30s elapsed, 2 cars spawn per interval instead of 1
+- **Triple car**: after 60s elapsed, 3 cars spawn per interval
 
 ### Difficulty Scaling
 - **Spawn interval**: exponential decay `3.0 + 2.0 × e^(-elapsed / 55)`, starts at 5.0s, floor at 3.0s
@@ -48,9 +49,9 @@
 |---------|--------------|-------------|-----------|------------|
 | 0s | 2.5s | 5.0s | 450–650 | 1 |
 | 30s | 2.1s | 4.2s | 509–709 | 2 |
-| 60s | 1.8s | 3.7s | 545–745 | 2 |
-| 90s | 1.7s | 3.4s | 567–767 | 2 |
-| 120s+ | ~1.5s | ~3.0s | ~600–800 | 2 |
+| 60s | 1.8s | 3.7s | 545–745 | 3 |
+| 90s | 1.7s | 3.4s | 567–767 | 3 |
+| 120s+ | ~1.5s | ~3.0s | ~600–800 | 3 |
 
 ## Timer
 

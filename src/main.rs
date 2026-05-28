@@ -65,6 +65,7 @@ async fn main() {
     let car_speed_tau = 60.0;
 
     let car_double_threshold = 30.0;
+    let car_triple_threshold = 60.0;
 
     loop {
         // 1. Logic (Update your variables here)
@@ -94,6 +95,9 @@ async fn main() {
         if car_spawn_timer >= car_interval {
             cars.push(Car::new(car_speed_min, car_speed_max));
             if elapsed >= car_double_threshold {
+                cars.push(Car::new(car_speed_min, car_speed_max));
+            }
+            if elapsed >= car_triple_threshold {
                 cars.push(Car::new(car_speed_min, car_speed_max));
             }
             car_spawn_timer = 0.0;
@@ -231,7 +235,7 @@ async fn main() {
                 debug_x - 10.0,
                 debug_y - pad_y,
                 370.0,
-                line_h * 9.0 + pad_y * 2.0,
+                line_h * 10.0 + pad_y * 2.0,
                 Color::new(0.0, 0.0, 0.0, 0.7),
             );
 
@@ -244,6 +248,7 @@ async fn main() {
                 format!("Cat: ({:.0}, {:.0})", cat.position.x, cat.position.y),
                 format!("Score: {}", score),
                 format!("Double car: {}", if elapsed >= car_double_threshold { "ON" } else { "OFF" }),
+                format!("Triple car: {}", if elapsed >= car_triple_threshold { "ON" } else { "OFF" }),
                 format!("[F3] hide debug"),
             ];
             for (i, line) in lines.iter().enumerate() {
