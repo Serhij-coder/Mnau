@@ -205,6 +205,21 @@ async fn main() {
             },
         );
 
+        // Draw game timer in the top-right corner
+        let time_text = format!("{}s", elapsed as u64);
+        let time_dims = measure_text(&time_text, Some(&assets.font), 50, 1.0);
+        draw_text_ex(
+            &time_text,
+            screen_width() - time_dims.width - 10.0,
+            60.0,
+            TextParams {
+                font: Some(&assets.font),
+                font_size: 50,
+                color: WHITE,
+                ..Default::default()
+            },
+        );
+
         if debug_visible {
             let debug_x = screen_width() - 380.0;
             let debug_y = 20.0;
